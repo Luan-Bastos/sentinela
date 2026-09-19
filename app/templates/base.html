@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}Sentinela{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="rail">
+      <div class="rail-marca">
+        <div class="selo">S</div>
+        <h1>Sentinela</h1>
+        <div class="versao">Escala de Serviço</div>
+      </div>
+
+      <nav class="rail-nav">
+        <div class="grupo">
+          <a href="{{ url_for('principal.index') }}" class="{{ 'ativo' if request.endpoint == 'principal.index' }}">Principal</a>
+        </div>
+
+        <div class="grupo">
+          <div class="grupo-titulo">Pessoal</div>
+          <a href="{{ url_for('pessoal.militares_lista') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('pessoal.') }}">Militares</a>
+          <a href="{{ url_for('servicos.previsao_diaria') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('servicos.') }}">Serviços &rsaquo; Previsão Diária</a>
+        </div>
+
+        <div class="grupo">
+          <div class="grupo-titulo">Utilitário</div>
+          <a href="{{ url_for('utilitario.unidades') }}" class="{{ 'ativo' if request.endpoint in ['utilitario.unidades', 'utilitario.unidade_excluir'] }}">Unidades</a>
+          <a href="{{ url_for('utilitario.pelotoes') }}" class="{{ 'ativo' if request.endpoint in ['utilitario.pelotoes', 'utilitario.pelotao_excluir'] }}">Pelotões / Seções</a>
+          <a href="{{ url_for('utilitario.postos') }}" class="{{ 'ativo' if request.endpoint in ['utilitario.postos', 'utilitario.posto_alternar'] }}">Postos de Serviço</a>
+        </div>
+
+        <div class="grupo">
+          <a href="{{ url_for('ordens.lista') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('ordens.') }}">OS</a>
+        </div>
+
+        <div class="grupo">
+          <a href="{{ url_for('principal.sobre') }}" class="{{ 'ativo' if request.endpoint == 'principal.sobre' }}">Sobre</a>
+        </div>
+      </nav>
+
+      {% if current_user.is_authenticated %}
+      <div class="rail-rodape">
+        <div>{{ current_user.identificacao }}</div>
+        <div><a href="{{ url_for('auth.logoff') }}" class="sair">Sair</a></div>
+      </div>
+      {% endif %}
+    </aside>
+
+    <div class="main">
+      <div class="trilha">{% block trilha %}Principal{% endblock %}</div>
+      <div class="conteudo">
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+          {% if mensagens %}
+          <ul class="flashes">
+            {% for categoria, mensagem in mensagens %}
+              <li class="flash {{ categoria }}">{{ mensagem }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        {% endwith %}
+
+        {% block conteudo %}{% endblock %}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

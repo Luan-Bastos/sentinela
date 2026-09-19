@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}Nova OS — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; OS &gt; Nova{% endblock %}
+
+{% block conteudo %}
+<div class="painel">
+  <div class="painel-cabecalho"><h2>Nova Ordem de Serviço</h2></div>
+  <form method="POST" class="form-ficha">
+    <div class="linha-campos">
+      <div class="campo">
+        <label for="numero">Número</label>
+        <input type="text" id="numero" name="numero" placeholder="Ex.: 158" required>
+      </div>
+      <div class="campo">
+        <label for="data">Data</label>
+        <input type="date" id="data" name="data" value="{{ hoje.isoformat() }}" required>
+      </div>
+    </div>
+    <div class="campo">
+      <label for="assunto">Assunto</label>
+      <input type="text" id="assunto" name="assunto" required>
+    </div>
+    <div class="campo">
+      <label for="conteudo">Conteúdo</label>
+      <textarea id="conteudo" name="conteudo" required></textarea>
+    </div>
+    <div class="form-acoes">
+      <button type="submit" class="botao botao-primario">Publicar</button>
+      <a href="{{ url_for('ordens.lista') }}" class="botao botao-secundario">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

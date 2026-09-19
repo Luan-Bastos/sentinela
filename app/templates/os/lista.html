@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Ordens de Serviço — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; OS{% endblock %}
+
+{% block conteudo %}
+<div class="painel">
+  <div class="painel-cabecalho">
+    <h2>Ordens de Serviço</h2>
+    <a href="{{ url_for('ordens.nova') }}" class="botao botao-primario">+ Nova OS</a>
+  </div>
+  <div class="painel-corpo">
+    {% if ordens %}
+    <table class="ficha">
+      <thead><tr><th>Nº</th><th>Data</th><th>Assunto</th><th>Publicada por</th><th></th></tr></thead>
+      <tbody>
+        {% for os in ordens %}
+        <tr>
+          <td><a href="{{ url_for('ordens.detalhe', os_id=os.id) }}">{{ os.numero }}</a></td>
+          <td>{{ os.data.strftime('%d/%m/%Y') }}</td>
+          <td>{{ os.assunto }}</td>
+          <td>{{ os.publicado_por.identificacao }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('ordens.excluir', os_id=os.id) }}" style="display:inline;" onsubmit="return confirm('Remover esta OS?');">
+              <button type="submit" class="botao-link" style="color:#a53a2c;">remover</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="painel-vazio">Nenhuma Ordem de Serviço publicada.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block titulo %}Pelotões/Seções — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; Utilitário &gt; Pelotões/Seções{% endblock %}
+
+{% block conteudo %}
+<div class="layout-previsao" style="grid-template-columns: 1fr 320px;">
+  <div class="painel">
+    <div class="painel-cabecalho"><h2>Pelotões / Seções</h2></div>
+    <div class="painel-corpo">
+      {% if pelotoes %}
+      <table class="ficha">
+        <thead><tr><th>Nome</th><th>Unidade</th><th></th></tr></thead>
+        <tbody>
+          {% for p in pelotoes %}
+          <tr>
+            <td><strong>{{ p.nome }}</strong></td>
+            <td>{{ p.unidade.sigla }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('utilitario.pelotao_excluir', pelotao_id=p.id) }}" style="display:inline;" onsubmit="return confirm('Remover {{ p.nome }}?');">
+                <button type="submit" class="botao-link" style="color:#a53a2c;">remover</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="painel-vazio">Nenhum pelotão/seção cadastrado.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="painel">
+    <div class="painel-cabecalho"><h2>Novo pelotão/seção</h2></div>
+    <form method="POST" class="form-ficha" style="padding:16px;">
+      <div class="campo">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Ex.: 1º Pelotão" required>
+      </div>
+      <div class="campo">
+        <label for="unidade_id">Unidade</label>
+        <select id="unidade_id" name="unidade_id" required>
+          {% for u in unidades %}
+          <option value="{{ u.id }}">{{ u.sigla }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="botao botao-primario">Adicionar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

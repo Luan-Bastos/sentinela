@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block titulo %}Postos de Serviço — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; Utilitário &gt; Postos de Serviço{% endblock %}
+
+{% block conteudo %}
+<div class="layout-previsao" style="grid-template-columns: 1fr 320px;">
+  <div class="painel">
+    <div class="painel-cabecalho"><h2>Postos de serviço</h2></div>
+    <div class="painel-corpo">
+      {% if postos %}
+      <table class="ficha">
+        <thead><tr><th>Nome</th><th>Tipo</th><th>Contingente</th><th></th></tr></thead>
+        <tbody>
+          {% for p in postos %}
+          <tr>
+            <td><strong>{{ p.nome }}</strong> {% if not p.ativo %}<span class="texto-suave">(inativo)</span>{% endif %}</td>
+            <td>{{ p.tipo }}</td>
+            <td>{{ p.contingente }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('utilitario.posto_alternar', posto_id=p.id) }}" style="display:inline;">
+                <button type="submit" class="botao-link">{{ 'desativar' if p.ativo else 'reativar' }}</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="painel-vazio">Nenhum posto cadastrado.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="painel">
+    <div class="painel-cabecalho"><h2>Novo posto</h2></div>
+    <form method="POST" class="form-ficha" style="padding:16px;">
+      <div class="campo">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Ex.: Gd Paiol" required>
+      </div>
+      <div class="campo">
+        <label for="tipo">Tipo</label>
+        <select id="tipo" name="tipo" required>
+          <option value="Externo">Externo</option>
+          <option value="Interno">Interno</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="contingente">Contingente (militares aptos)</label>
+        <input type="number" id="contingente" name="contingente" min="0" value="0">
+      </div>
+      <button type="submit" class="botao botao-primario">Adicionar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

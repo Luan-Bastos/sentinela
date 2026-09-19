@@ -1,0 +1,56 @@
+{% macro status_ponto(escala, campo, rota, rotulo_pendente, rotulo_feito) %}
+  {% set quando = escala.notificado_em if campo == 'notificado' else escala.confirmado_em %}
+  {% set gdh = escala.gdh_notificado if campo == 'notificado' else escala.gdh_confirmado %}
+  <span class="status-ponto {{ 'ativo ' + campo if quando }}">
+    <span class="bola"></span>
+    {% if quando %}
+      {{ rotulo_feito }} <span class="gdh">{{ gdh }}</span>
+    {% else %}
+      <form method="POST" action="{{ url_for(rota, escala_id=escala.id) }}">
+        <button type="submit">{{ rotulo_pendente }}</button>
+      </form>
+    {% endif %}
+  </span>
+{% endmacro %}
+
+{% macro tabela_escalas(escalas, dia) %}
+  {% if escalas %}
+  <table class="ficha">
+    <thead>
+      <tr>
+        <th>Posto</th>
+        <th>Militar escalado</th>
+        <th>Responsável</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in escalas %}
+      <tr>
+        <td>{{ e.posto.nome }} <span class="contingente">({{ e.posto.contingente }})</span></td>
+        <td class="identificacao-militar">
+          {{ e.militar.identificacao }}
+          <span class="unidade">{{ e.militar.unidade.sigla }}{{ ' / ' + e.militar.pelotao.nome if e.militar.pelotao }}</span>
+        </td>
+        <td>{{ e.responsavel.identificacao if e.responsavel else '—' }}</td>
+        <td>
+          <div class="status-grupo">
+            {{ status_ponto(e, 'notificado', 'servicos.escala_notificar', 'notificar', 'Notificado') }}
+            {{ status_ponto(e, 'confirmado', 'servicos.escala_confirmar', 'confirmar', 'Ciente') }}
+          </div>
+        </td>
+        <td>
+          <a href="{{ url_for('servicos.escala_editar', escala_id=e.id) }}" class="botao-link">editar</a>
+          <form method="POST" action="{{ url_for('servicos.escala_excluir', escala_id=e.id) }}" style="display:inline;" onsubmit="return confirm('Remover esta escala?');">
+            <button type="submit" class="botao-link" style="color:#a53a2c;">remover</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="painel-vazio">Nenhum posto escalado neste dia.</p>
+  {% endif %}
+{% endmacro %}

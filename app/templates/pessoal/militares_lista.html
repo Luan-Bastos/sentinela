@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block titulo %}Militares — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; Pessoal &gt; Militares{% endblock %}
+
+{% block conteudo %}
+<div class="painel">
+  <div class="painel-cabecalho">
+    <h2>Militares cadastrados</h2>
+    <div class="acoes-cabecalho">
+      <form method="GET" style="display:flex; gap:6px;">
+        <input type="text" name="q" value="{{ q }}" placeholder="Buscar por nome ou nº" style="padding:6px 9px; border-radius:3px; border:1px solid var(--color-line-strong);">
+      </form>
+      <a href="{{ url_for('pessoal.militares_novo') }}" class="botao botao-primario">+ Novo militar</a>
+    </div>
+  </div>
+  <div class="painel-corpo">
+    {% if militares %}
+    <table class="ficha">
+      <thead>
+        <tr><th>Identificação</th><th>Cargo</th><th>Unidade</th><th>Pelotão/Seção</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for m in militares %}
+        <tr>
+          <td class="identificacao-militar">
+            {{ m.identificacao }}
+            {% if not m.ativo %}<span class="texto-suave">(inativo)</span>{% endif %}
+          </td>
+          <td>{{ m.cargo or '—' }}</td>
+          <td>{{ m.unidade.sigla }}</td>
+          <td>{{ m.pelotao.nome if m.pelotao else '—' }}</td>
+          <td>
+            <a href="{{ url_for('pessoal.militares_editar', militar_id=m.id) }}" class="botao-link">editar</a>
+            {% if m.ativo %}
+            <form method="POST" action="{{ url_for('pessoal.militares_excluir', militar_id=m.id) }}" style="display:inline;" onsubmit="return confirm('Desativar {{ m.identificacao }}?');">
+              <button type="submit" class="botao-link" style="color:#a53a2c;">desativar</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="painel-vazio">Nenhum militar encontrado.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

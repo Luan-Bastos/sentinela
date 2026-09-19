@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrar — Sentinela</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="tela-login">
+  <div class="cartao-login">
+    <div class="selo">S</div>
+    <h1>Sentinela</h1>
+    <p class="subtitulo">Escala de Serviço — acesso interno</p>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+      {% if mensagens %}
+      <ul class="flashes">
+        {% for categoria, mensagem in mensagens %}
+          <li class="flash {{ categoria }}">{{ mensagem }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="campo">
+        <label for="username">Usuário</label>
+        <input type="text" id="username" name="username" autocomplete="username" required autofocus>
+      </div>
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="botao botao-primario">Entrar</button>
+    </form>
+
+    <p class="dica">Usuário de demonstração: <strong>bastos</strong> / senha <strong>123456</strong></p>
+  </div>
+</body>
+</html>

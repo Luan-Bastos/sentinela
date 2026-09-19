@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}OS {{ os.numero }} — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; OS &gt; {{ os.numero }}{% endblock %}
+
+{% block conteudo %}
+<div class="painel">
+  <div class="painel-cabecalho">
+    <h2>OS nº {{ os.numero }} — {{ os.data.strftime('%d/%m/%Y') }}</h2>
+    <span class="conta">{{ os.publicado_por.identificacao }}</span>
+  </div>
+  <div class="painel-corpo com-padding">
+    <h3 style="margin-bottom:12px;">{{ os.assunto }}</h3>
+    <p style="white-space:pre-wrap;">{{ os.conteudo }}</p>
+  </div>
+</div>
+<a href="{{ url_for('ordens.lista') }}" class="botao botao-secundario">&larr; Voltar</a>
+{% endblock %}

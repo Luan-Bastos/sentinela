@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block titulo %}Principal — Sentinela{% endblock %}
+{% block trilha %}Principal{% endblock %}
+
+{% block conteudo %}
+<h2 class="mt-0" style="margin-bottom:18px;">Painel do dia</h2>
+
+<div class="cartoes-resumo">
+  <div class="cartao-resumo">
+    <div class="numero">{{ escaladas_hoje }}</div>
+    <div class="rotulo">Escalas para hoje ({{ hoje.strftime('%d/%m/%Y') }})</div>
+  </div>
+  <div class="cartao-resumo">
+    <div class="numero">{{ total_militares }}</div>
+    <div class="rotulo">Militares ativos cadastrados</div>
+  </div>
+  <div class="cartao-resumo">
+    <div class="numero">{{ ultimas_os|length }}</div>
+    <div class="rotulo">Ordens de Serviço recentes</div>
+  </div>
+</div>
+
+<div class="painel">
+  <div class="painel-cabecalho">
+    <h2>Últimas Ordens de Serviço</h2>
+    <a href="{{ url_for('ordens.lista') }}" style="color:#f4f2ea;font-size:13px;">ver todas</a>
+  </div>
+  <div class="painel-corpo">
+    {% if ultimas_os %}
+    <table class="ficha">
+      <thead>
+        <tr><th>Nº</th><th>Data</th><th>Assunto</th><th>Publicada por</th></tr>
+      </thead>
+      <tbody>
+        {% for os in ultimas_os %}
+        <tr>
+          <td><a href="{{ url_for('ordens.detalhe', os_id=os.id) }}">{{ os.numero }}</a></td>
+          <td>{{ os.data.strftime('%d/%m/%Y') }}</td>
+          <td>{{ os.assunto }}</td>
+          <td>{{ os.publicado_por.identificacao }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="painel-vazio">Nenhuma Ordem de Serviço publicada ainda.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="painel">
+  <div class="painel-cabecalho"><h2>Acesso rápido</h2></div>
+  <div class="painel-corpo com-padding" style="display:flex; gap:10px; flex-wrap:wrap;">
+    <a href="{{ url_for('servicos.previsao_diaria') }}" class="botao botao-primario">Previsão Diária</a>
+    <a href="{{ url_for('pessoal.militares_novo') }}" class="botao botao-secundario">Cadastrar militar</a>
+    <a href="{{ url_for('ordens.nova') }}" class="botao botao-secundario">Publicar OS</a>
+  </div>
+</div>
+{% endblock %}

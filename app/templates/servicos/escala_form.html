@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block titulo %}{{ 'Editar' if escala else 'Nova' }} escala — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; Pessoal &gt; Serviços &gt; Previsão Diária &gt; {{ 'Editar escala' if escala else 'Nova escala' }}{% endblock %}
+
+{% block conteudo %}
+<div class="painel">
+  <div class="painel-cabecalho"><h2>{{ 'Editar escala' if escala else 'Nova escala' }} — {{ dia.strftime('%d/%m/%Y') }}</h2></div>
+  <form method="POST" class="form-ficha">
+    <div class="campo">
+      <label for="posto_id">Posto de serviço</label>
+      <select id="posto_id" name="posto_id" required>
+        {% for p in postos %}
+        <option value="{{ p.id }}" {{ 'selected' if escala and escala.posto_id == p.id }}>{{ p.nome }} ({{ p.tipo }})</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="militar_id">Militar escalado</label>
+      <select id="militar_id" name="militar_id" required>
+        {% for mi in militares %}
+        <option value="{{ mi.id }}" {{ 'selected' if escala and escala.militar_id == mi.id }}>{{ mi.identificacao }} — {{ mi.unidade.sigla }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo">
+      <label for="responsavel_id">Responsável pela escala</label>
+      <select id="responsavel_id" name="responsavel_id">
+        <option value="">—</option>
+        {% for mi in militares %}
+        <option value="{{ mi.id }}" {{ 'selected' if escala and escala.responsavel_id == mi.id }}>{{ mi.identificacao }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-acoes">
+      <button type="submit" class="botao botao-primario">Salvar</button>
+      <a href="{{ url_for('servicos.previsao_diaria', data=dia.isoformat()) }}" class="botao botao-secundario">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

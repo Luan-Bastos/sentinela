@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% import "servicos/_macros.html" as m %}
+{% block titulo %}Previsão Diária — Sentinela{% endblock %}
+{% block trilha %}Principal &gt; Pessoal &gt; Serviços &gt; Previsão Diária{% endblock %}
+
+{% block conteudo %}
+{% set qs = {'unidade_id': filtro_unidade, 'pelotao_id': filtro_pelotao, 'responsavel_id': filtro_responsavel} %}
+
+<div class="layout-previsao">
+  <aside>
+    <div class="painel">
+      <div class="painel-calendario">
+        <div class="calendario-cabecalho">
+          <a href="{{ url_for('servicos.previsao_diaria', data=mes_anterior.isoformat(), **qs) }}">&lsaquo;</a>
+          <span class="mes-ano">{{ dia.strftime('%B/%Y') | capitalize }}</span>
+          <a href="{{ url_for('servicos.previsao_diaria', data=mes_seguinte.isoformat(), **qs) }}">&rsaquo;</a>
+        </div>
+        <table class="mini-calendario">
+          <thead>
+            <tr><th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th></tr>
+          </thead>
+          <tbody>
+            {% for semana in semanas %}
+            <tr>
+              {% for d in semana %}
+              <td class="{{ 'fora-do-mes' if d.month != dia.month }} {{ 'selecionado' if d == dia }} {{ 'hoje' if d == hoje and d != dia }}">
+                <a href="{{ url_for('servicos.previsao_diaria', data=d.isoformat(), **qs) }}">{{ d.day }}</a>
+              </td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <form class="filtros" method="GET">
+        <input type="hidden" name="data" value="{{ dia.isoformat() }}">
+        <div>
+          <label for="unidade_id">Unidade (SU)</label>
+          <select id="unidade_id" name="unidade_id" onchange="this.form.submit()">
+            <option value="">Todas</option>
+            {% for u in unidades %}
+            <option value="{{ u.id }}" {{ 'selected' if filtro_unidade == u.id }}>{{ u.sigla }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="pelotao_id">Pelotão/Seção</label>
+          <select id="pelotao_id" name="pelotao_id" onchange="this.form.submit()">
+            <option value="">Todos</option>
+            {% for p in pelotoes %}
+            <option value="{{ p.id }}" {{ 'selected' if filtro_pelotao == p.id }}>{{ p.nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label for="responsavel_id">Responsável</label>
+          <select id="responsavel_id" name="responsavel_id" onchange="this.form.submit()">
+            <option value="">Todos</option>
+            {% for r in responsaveis %}
+            <option value="{{ r.id }}" {{ 'selected' if filtro_responsavel == r.id }}>{{ r.identificacao }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <div>
+    <div class="painel">
+      <div class="painel-cabecalho">
+        <h2>{{ dia.strftime('%d/%m/%Y') }} — {{ dia.strftime('%A') | capitalize }}</h2>
+        <div class="acoes-cabecalho">
+          <form method="POST" action="{{ url_for('servicos.gerar_previsao', data=dia.isoformat()) }}">
+            <button type="submit" class="botao botao-secundario">Gerar Previsão</button>
+          </form>
+          <a href="{{ url_for('servicos.escala_nova', data=dia.isoformat()) }}" class="botao botao-primario">+ Escala</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="painel">
+      <div class="painel-cabecalho"><h2>Serviço Externo</h2></div>
+      <div class="painel-corpo">{{ m.tabela_escalas(externo, dia) }}</div>
+    </div>
+
+    <div class="painel">
+      <div class="painel-cabecalho"><h2>Serviço Interno</h2></div>
+      <div class="painel-corpo">{{ m.tabela_escalas(interno, dia) }}</div>
+    </div>
+
+    <div class="painel">
+      <div class="painel-cabecalho">
+        <h2>Missão</h2>
+        <a href="{{ url_for('servicos.missao_nova', data=dia.isoformat()) }}" style="color:#f4f2ea;font-size:13px;">+ nova missão</a>
+      </div>
+      <div class="painel-corpo">
+        {% if missoes %}
+        <table class="ficha">
+          <thead><tr><th>Local</th><th>Militar</th><th>Ciente</th><th></th></tr></thead>
+          <tbody>
+            {% for msn in missoes %}
+            <tr>
+              <td>{{ msn.local }}</td>
+              <td class="identificacao-militar">{{ msn.militar.identificacao }}</td>
+              <td>
+                {% if msn.ciente_em %}
+                <span class="status-ponto ativo confirmado"><span class="bola"></span>Ciente</span>
+                {% else %}
+                <span class="status-ponto"><span class="bola"></span>pendente</span>
+                {% endif %}
+              </td>
+              <td>
+                <form method="POST" action="{{ url_for('servicos.missao_excluir', missao_id=msn.id) }}" style="display:inline;" onsubmit="return confirm('Remover esta missão?');">
+                  <button type="submit" class="botao-link" style="color:#a53a2c;">remover</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <p class="painel-vazio">Nenhuma missão registrada neste dia.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
