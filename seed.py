@@ -1,9 +1,5 @@
 """
-Popula o banco com dados FICTÍCIOS de demonstração.
-
-Nenhum nome, número ou unidade aqui vem do arquivo original — foram
-inventados livremente só para o sistema ter o que mostrar na primeira
-execução.
+banco com dados FICTÍCIOS de demonstração.
 """
 from datetime import date, datetime, timedelta
 
